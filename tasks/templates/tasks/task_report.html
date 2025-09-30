@@ -1,0 +1,9 @@
+{% extends "tasks/base.html" %}
+{% block content %}
+<h2>Task Report</h2>
+<p><strong>Title:</strong> {{ task.title }}</p>
+<p><strong>Assigned To:</strong> {{ task.assigned_to.username }}</p>
+<p><strong>Status:</strong> {{ task.status }}</p>
+<p><strong>Completion Report:</strong> {{ task.completion_report }}</p>
+<p><strong>Worked Hours:</strong> {{ task.worked_hours }}</p>
+{% endblock %}

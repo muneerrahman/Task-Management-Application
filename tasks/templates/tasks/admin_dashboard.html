@@ -1,0 +1,72 @@
+{% extends "tasks/base.html" %}
+{% block content %}
+<h2 style="text-align:center;">Admin Dashboard</h2>
+
+{% for user in users %}
+<div style="border:1px solid #ccc; padding:15px; margin-bottom:20px; border-radius:5px; background:#f9f9f9;">
+    <h4>User: {{ user.username }}</h4>
+
+    <!-- Create task form -->
+    <form method="post" action="{% url 'admin_dashboard' %}" style="margin-bottom:10px;">
+        {% csrf_token %}
+        <input type="hidden" name="assigned_to" value="{{ user.id }}">
+        <div>
+            <label>Title:</label>
+            <input type="text" name="title" required>
+        </div>
+        <div>
+            <label>Description:</label>
+            <input type="text" name="description" required>
+        </div>
+        <div>
+            <label>Due Date:</label>
+            <input type="date" name="due_date" required>
+        </div>
+        <button type="submit" class="submit">Create Task</button>
+    </form>
+
+    <!-- User tasks table -->
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Due</th>
+                <th>Status</th>
+                <th>Report</th>
+                <th>Hours</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for task in tasks %}
+            {% if task.assigned_to.id == user.id %}
+            <tr>
+                <td>{{ task.title }}</td>
+                <td>{{ task.description }}</td>
+                <td>{{ task.due_date }}</td>
+                <td>{{ task.status }}</td>
+                <td>{{ task.completion_report|default:"-" }}</td>
+                <td>{{ task.worked_hours|default:"-" }}</td>
+                <td>
+                    <a href="{% url 'task-detail-web' task.id %}">Edit</a> |
+                    <a href="{% url 'task-report-web' task.id %}">Report</a> |
+                    <form method="POST" action="{% url 'admin_task_delete' task.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="delete" onclick="return confirm('Delete this task?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endif %}
+        {% empty %}
+            <tr>
+                <td colspan="7" style="text-align:center;">No tasks for this user yet.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% empty %}
+<p style="text-align:center;">No users assigned to you.</p>
+{% endfor %}
+{% endblock %}

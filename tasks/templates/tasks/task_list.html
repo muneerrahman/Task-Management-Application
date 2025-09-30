@@ -1,0 +1,40 @@
+{% extends "tasks/base.html" %}
+{% block content %}
+<h2>Tasks</h2>
+<table border="1">
+    <tr>
+        <th>Title</th>
+        <th>Assigned To</th>
+        <th>Status</th>
+        <th>Completion Report</th>
+        <th>Worked Hours</th>
+        <th>Due Date</th>
+        <th>Actions</th>
+    </tr>
+    {% for task in tasks %}
+    <tr>
+        <td>{{ task.title }}</td>
+        <td>{{ task.assigned_to.username }}</td>
+        <td>{{ task.get_status_display }}</td>
+        <td>{{ task.completion_report|default:"-" }}</td>
+        <td>{{ task.worked_hours|default:"-" }}</td>
+        <td>{{ task.due_date }}</td>
+        <td>
+            <!-- Only assigned user can update if task not completed -->
+            {% if request.user == task.assigned_to and task.status != 'completed' %}
+                <a href="{% url 'task-detail-web' task.id %}">Update</a>
+            {% endif %}
+
+            <!-- Admin or superadmin can view report of completed tasks -->
+            {% if task.status == 'completed' and request.user.role in allowed_roles %}
+               <a href="{% url 'task-report-web' task.id %}">View Report</a>
+            {% endif %}
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="7">No tasks found.</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "tasks/base.html" %}
+{% block content %}
+<h2>Admin Management</h2>
+
+<table border="1" cellpadding="5" cellspacing="0">
+    <tr>
+        <th>Username</th>
+        <th>Staff Status</th>
+        <th>Assigned Users</th>
+        <th>Actions</th>
+    </tr>
+    {% for admin in admins %}
+    <tr>
+        <!-- Edit Admin: Username & Staff -->
+        <form method="POST" action="{% url 'superadmin_edit_admin' admin.id %}">
+            {% csrf_token %}
+            <td>
+                <input type="text" name="username" value="{{ admin.username }}" required>
+            </td>
+            <td>
+                <input type="checkbox" name="is_staff" {% if admin.is_staff %}checked{% endif %}>
+            </td>
+            <td>
+                {% if admin.assigned_users.exists %}
+                    {% for user in admin.assigned_users.all %}
+                        {{ user.username }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                {% else %}
+                    None
+                {% endif %}
+            </td>
+            <td>
+                <button type="submit">Update</button>
+                <form method="POST" action="{% url 'superadmin_delete_admin' admin.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="color:red;" onclick="return confirm('Are you sure you want to delete this admin?')">Delete</button>
+                </form>
+            </td>
+        </form>
+    </tr>
+    {% endfor %}
+</table>
+
+<br>
+<a href="{% url 'superadmin_create_user' %}">Create New Admin/User</a>
+{% endblock %}

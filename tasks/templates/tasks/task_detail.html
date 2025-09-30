@@ -1,0 +1,21 @@
+{% extends "tasks/base.html" %}
+{% block content %}
+<h2>Update Task</h2>
+<form method="post">
+    {% csrf_token %}
+    <label>Status:</label>
+    <select name="status">
+        <option value="pending" {% if task.status == 'pending' %}selected{% endif %}>Pending</option>
+        <option value="in_progress" {% if task.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+        <option value="completed" {% if task.status == 'completed' %}selected{% endif %}>Completed</option>
+    </select><br><br>
+
+    <label>Completion Report:</label>
+    <textarea name="completion_report">{{ task.completion_report }}</textarea><br><br>
+
+    <label>Worked Hours:</label>
+    <input type="number" name="worked_hours" value="{{ task.worked_hours }}"><br><br>
+
+    <button type="submit">Update Task</button>
+</form>
+{% endblock %}

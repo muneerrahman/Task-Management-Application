@@ -1,0 +1,52 @@
+{% extends "tasks/base.html" %}
+{% block content %}
+<h2>Create New User/Admin/SuperAdmin</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    <label>Username:</label>
+    <input type="text" name="username" required><br><br>
+
+    <label>Password:</label>
+    <input type="password" name="password" required><br><br>
+
+    <label>Role:</label>
+    <select name="role" id="role-select" required>
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+        <option value="superadmin">SuperAdmin</option>
+    </select><br><br>
+
+    <label>Staff:</label>
+    <input type="checkbox" name="is_staff"><br><br>
+
+    <!-- Show assigned admin only if role is "user" -->
+    <div id="assigned-admin-div">
+        <label>Assign Admin:</label>
+        <select name="assigned_admin">
+            <option value="">--Select Admin--</option>
+            {% for admin in admins %}
+            <option value="{{ admin.id }}">{{ admin.username }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <button type="submit">Create</button>
+</form>
+
+<script>
+    const roleSelect = document.getElementById('role-select');
+    const adminDiv = document.getElementById('assigned-admin-div');
+
+    function toggleAdminSelect() {
+        if(roleSelect.value === 'user') {
+            adminDiv.style.display = 'block';
+        } else {
+            adminDiv.style.display = 'none';
+        }
+    }
+
+    roleSelect.addEventListener('change', toggleAdminSelect);
+    toggleAdminSelect(); // initial call
+</script>
+{% endblock %}
